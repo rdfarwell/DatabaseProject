@@ -9,14 +9,42 @@ import json
 
 rec = Blueprint('rec', __name__)
 
-#def smartAlgo():
-
+def smartAlgo():
+    traits = ['acousticness','danceability','energy','instrumentalness','liveness','loudness','popularity','speechiness','tempo','valence']
+    likedUserSongs = Playlist.query.filter_by(user_id = current_user.id, likeability = 1).all()
+    dislikedUserSongs = Playlist.query.filter_by(user_id = current_user.id, likeability = 0).all()
+    likedSongs = []
+    dislikedSongs = []
+    for x in likedUserSongs:
+        likedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
+    for y in dislikedUserSongs:
+        dislikedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
+    
+    for trait in traits:
+        count = 0
+        liked = 0.0
+        disliked = 0.0
+        for songs in likedSongs:
+            liked += vars(songs)[trait]
+            count += 1
+        liked = float(liked/count)
+        count = 0
+        for songs in dislikedSongs:
+            disliked += vars(songs)[trait]
+            count += 1
+        disliked = float(disliked/count)
+        print(liked)
+        print(disliked)
+        
+    #liked = 
+    #disliked = 
 
 
 
 @rec.route('/')
 def index():
     #song = request.args.get('song')
+    smartAlgo()
     userSongs = recommendedSongs.query.filter_by(user_id = current_user.id).all()
     songs = []
     print(userSongs)
