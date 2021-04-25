@@ -16,10 +16,14 @@ def create_app():
     from .views import views
     from .auth import auth
     from .rec import rec
+    from .add import add
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(rec, url_prefix='/rec')
+    app.register_blueprint(add, url_prefix='/add')
+
+
 
 
 
