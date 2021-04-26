@@ -1,22 +1,27 @@
 {% extends "base.html" %} {% block title %}Add{% endblock %} {% block content
     %}
+    <style>
+      p {
+        padding-right: 1500px;
+      }
+      </style>
 
     <h1 align="center">Add Songs</h1>
     <form class="form-inline my-2 my-lg-0" method="GET">
-      <h3>
+      <p><h3>
         Search by Artist
-      </h3>
-      <input align="center" class="form-control mr-sm-2" type="search" placeholder="Artist" name="song">
-      <h3>
+      </h3></p>
+    <p><input align="center" class="form-control mr-sm-2" type="search" placeholder="Artist" name="artist"></p>
+  <p><h3>
         Search by Playlist
-      </h3>
-      <input align="center" class="form-control mr-sm-2" type="search" placeholder="Playlist URI" name="song">
-      <input align="center" class="form-control mr-sm-2" type="search" placeholder="Creator URI" name="song">
-      <h3>
+      </h3></p>
+      <input align="center" class="form-control mr-sm-2" type="search" placeholder="Playlist URI" name="playlist">
+      <input align="center" class="form-control mr-sm-2" type="search" placeholder="Creator URI" name="owner">
+    <p><h3>
         Search by Personal Playlist
-      </h3>
-      <input align="center" class="form-control mr-sm-2" type="search" placeholder="Playlist URI" name="song">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </h3></p>
+    <p><input align="center" class="form-control mr-sm-2" type="search" placeholder="Playlist URI" name="user_playlist"></p>
+  <p><button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button></p>
     </form>
 
 {% endblock %}
