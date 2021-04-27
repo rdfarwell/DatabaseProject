@@ -44,10 +44,10 @@ def smartAlgo():
                 queryText = queryText + 'and '
             median = (liked + disliked) / 2
             if liked > disliked: # liked is higher
-                queryText = queryText + trait + ' > ' + str(liked) + ' '
+                queryText = queryText + trait + ' > ' + str(median) + ' '
                 first = False
             else:
-                queryText = queryText + trait + ' < ' + str(liked) + ' '
+                queryText = queryText + trait + ' < ' + str(median) + ' '
                 first = False
 
     if not first: # prevents a person with no analytices from being run
