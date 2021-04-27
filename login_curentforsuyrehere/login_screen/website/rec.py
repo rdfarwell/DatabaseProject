@@ -19,7 +19,10 @@ def smartAlgo():
         likedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
     for y in dislikedUserSongs:
         dislikedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
-    
+    queryText = 'Select * From songs Where '
+    likedTraits = []
+    dislikedTraits = []
+    first = True
     for trait in traits:
         count = 0
         liked = 0.0
@@ -28,16 +31,39 @@ def smartAlgo():
             liked += vars(songs)[trait]
             count += 1
         liked = float(liked/count)
+        likedTraits.append(liked)
         count = 0
         for songs in dislikedSongs:
             disliked += vars(songs)[trait]
             count += 1
         disliked = float(disliked/count)
-        print(liked)
-        print(disliked)
-        
-    #liked = 
-    #disliked = 
+        dislikedTraits.append(disliked)
+
+        if abs(liked - disliked) > 0.1:
+            if not first:
+                queryText = queryText + 'and '
+            median = (liked + disliked) / 2
+            if liked > disliked: # liked is higher
+                queryText = queryText + trait + ' > ' + str(liked) + ' '
+                first = False
+            else:
+                queryText = queryText + trait + ' < ' + str(liked) + ' '
+                first = False
+
+    if not first: # prevents a person with no analytices from being run
+        test = 'Select  * From songs Where acousticness > 0.5 and energy < 0.8'
+        queryText = queryText + 'Limit 10'
+        recommend = db.session.execute(queryText)
+        for i in recommend:
+            add_recommended = recommendedSongs(user_id=current_user.id, song_id = i[0])
+            db.session.add(add_recommended)
+            
+            # test = Songs.query.filter_by(id = i[0])
+            # print(i[0])
+            # print(test)
+            # print(i)
+        db.session.commit()
+
 
 
 
