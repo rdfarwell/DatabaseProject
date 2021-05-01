@@ -16,7 +16,7 @@
 
       </style>
 
-    <h1 align="center">Add Peronal Playlist</h1>
+    <h1 align="center">Add Personal Playlist</h1>
     <form class="form-inline my-2 my-lg-0" method="GET">
     <p><h3>
         Search by Personal Playlist
@@ -31,8 +31,11 @@
         <em>Playlist:</em> <strong>{{qs}}</strong>
 
 
-    <form action="/" METHOD="POST">
-        <button name="addPlaylist" type="button" class="btn btn-outline-primary" value = "qs" >Add Playlist</button>
+    <form METHOD="POST">
+        <button name="addPlaylist" type="submit" class="btn btn-outline-primary" value = "{{qs}}" >Add Playlist</button>
+      </form>
+    <form METHOD="POST">
+        <button name="likePlaylist" type="submit" class="btn btn-outline-primary" value = "{{qs}}" >Like Playlist</button>
       </form>
 
     {% endfor %}

@@ -10,68 +10,94 @@ import json
 rec = Blueprint('rec', __name__)
 
 def smartAlgo():
+    delete_old = recommendedSongs.query.filter_by(user_id = current_user.id).all()
+    for old in delete_old:
+        db.session.delete(old)
+    db.session.commit()
+
     traits = ['acousticness','danceability','energy','instrumentalness','liveness','loudness','popularity','speechiness','tempo','valence']
     likedUserSongs = Playlist.query.filter_by(user_id = current_user.id, likeability = 1).all()
     dislikedUserSongs = Playlist.query.filter_by(user_id = current_user.id, likeability = 0).all()
-    likedSongs = []
-    dislikedSongs = []
-    for x in likedUserSongs:
-        likedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
-    for y in dislikedUserSongs:
-        dislikedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
-    queryText = 'Select * From songs Where '
-    likedTraits = []
-    dislikedTraits = []
-    first = True
-    for trait in traits:
-        count = 0
-        liked = 0.0
-        disliked = 0.0
-        for songs in likedSongs:
-            liked += vars(songs)[trait]
-            count += 1
-        liked = float(liked/count)
-        likedTraits.append(liked)
-        count = 0
-        for songs in dislikedSongs:
-            disliked += vars(songs)[trait]
-            count += 1
-        disliked = float(disliked/count)
-        dislikedTraits.append(disliked)
+    if len(likedUserSongs) != 0 and len(dislikedUserSongs) != 0:
+        likedSongs = []
+        dislikedSongs = []
+        for x in likedUserSongs:
+            likedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
+        for y in dislikedUserSongs:
+            dislikedSongs.append(Songs.query.filter_by(id = x.song_id).all()[0])
+        queryText = 'Select * From songs Where '
+        likedTraits = []
+        dislikedTraits = []
+        first = True
+        for trait in traits:
+            count = 0
+            liked = 0.0
+            disliked = 0.0
+            for songs in likedSongs:
+                liked += vars(songs)[trait]
+                count += 1
+            liked = float(liked/count)
+            likedTraits.append(liked)
+            count = 0
+            for songs in dislikedSongs:
+                disliked += vars(songs)[trait]
+                count += 1
+            disliked = float(disliked/count)
+            dislikedTraits.append(disliked)
 
-        if abs(liked - disliked) > 0.1:
-            if not first:
-                queryText = queryText + 'and '
-            median = (liked + disliked) / 2
-            if liked > disliked: # liked is higher
-                queryText = queryText + trait + ' > ' + str(median) + ' '
-                first = False
-            else:
-                queryText = queryText + trait + ' < ' + str(median) + ' '
-                first = False
+            if abs(liked - disliked) > 0.1:
+                if not first:
+                    queryText = queryText + 'and '
+                median = (liked + disliked) / 2
+                if liked > disliked: # liked is higher
+                    queryText = queryText + trait + ' > ' + str(median) + ' '
+                    first = False
+                else:
+                    queryText = queryText + trait + ' < ' + str(median) + ' '
+                    first = False
 
-    if not first: # prevents a person with no analytices from being run
-        test = 'Select  * From songs Where acousticness > 0.5 and energy < 0.8'
-        queryText = queryText + 'Limit 10'
-        recommend = db.session.execute(queryText)
-        for i in recommend:
-            add_recommended = recommendedSongs(user_id=current_user.id, song_id = i[0])
-            db.session.add(add_recommended)
-            
-            # test = Songs.query.filter_by(id = i[0])
-            # print(i[0])
-            # print(test)
-            # print(i)
-        db.session.commit()
+        if not first: # prevents a person with no analytices from being run
+            test = 'Select  * From songs Where acousticness > 0.5 and energy < 0.8'
+            #queryText = queryText + 'Limit 10'
+            recommend = db.session.execute(queryText)
+            counter = 0
+            for i in recommend:
+                check_recommended = Playlist.query.filter_by(user_id=current_user.id, song_id = i[0]).all()
+                if len(check_recommended) == 0:
+                    add_recommended = recommendedSongs(user_id=current_user.id, song_id = i[0])
+                    db.session.add(add_recommended)
+                    counter += 1
+                
+                if counter >= 10:
+                    db.session.commit()
+                    return()
+                # test = Songs.query.filter_by(id = i[0])
+                # print(i[0])
+                # print(test)
+                # print(i)
+            db.session.commit()
 
 
 
 
-@rec.route('/')
+@rec.route('/', methods=['GET', 'POST'])
 def index():
     #song = request.args.get('song')
+    var = request.form.get('rereaction')
+    if var is not None:
+        like = var.find('like')
+        value = int(var.replace('dis','').replace('like',''))
+        qs = Songs.query.get_or_404(value)
+        if like == 0:
+            add_track = Playlist(user_id=current_user.id, likeability=1, song_id=qs.id )
+        else:
+            add_track = Playlist(user_id=current_user.id, likeability=0, song_id=qs.id )
+        db.session.add(add_track)
+        db.session.commit()
+
     smartAlgo()
     userSongs = recommendedSongs.query.filter_by(user_id = current_user.id).all()
+    global songs
     songs = []
     print(userSongs)
     for x in userSongs:

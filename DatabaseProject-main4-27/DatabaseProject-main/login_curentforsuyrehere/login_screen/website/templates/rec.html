@@ -1,9 +1,9 @@
 {% extends "base.html" %} {% block title %}Recommendations{% endblock %} {% block content
     %}
     <h1 align="center">Recommened</h1>
-
-    <button  align="center" class="btn btn-outline-success my-2 my-sm-0" type="submit">Reccomend Me!</button>
-    
+    <form action="/" METHOD="POST"></form>
+      <button  align="center" class="btn btn-outline-success my-2 my-sm-0" type="submit">Reccomend Me!</button>
+    </form>
 
 
     <table>
@@ -21,11 +21,11 @@
                 <p><em>Title:</em> {{qs.name}}</p>
                 <p><em>Artist:</em> <mark>{{qs.artist}}</mark>
       
-                <form action="/" METHOD="POST">
+                <form METHOD="POST">
                   <button name="rereaction" type="submit" class="btn btn-outline-primary" value = "like{{qs.id}}" >Like</button>
                 </form>
       
-                <form action="/" METHOD="POST" text-align="right">
+                <form METHOD="POST" text-align="right">
                   <button name="rereaction" type="submit" class="btn btn-outline-danger" value = "dislike{{qs.id}}">Dislike</button>
                 </form>
       

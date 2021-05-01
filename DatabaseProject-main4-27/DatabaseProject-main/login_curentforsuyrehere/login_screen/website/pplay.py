@@ -35,18 +35,20 @@ tester = []
 def get_playlist_tracks(username, playlist_id):
     sp = spotipy.Spotify(auth=token)
     results = sp.user_playlist_tracks(username, playlist_id)
+    print("test")
     tracks_user = results['items']
     while(results['next']):
         results = sp.next(results)
         tracks_user.extend(results['items'])
-    return (tracks_user)
+    print("test")
+    return (create_dict(tracks_user))
     
 '''this function is only for public user.'''
 def get_playlist_tracks_uri(playlist_id):
     xp = spotipy.Spotify(auth=token)
     results = xp.playlist(playlist_id)
     tracks_user = results['tracks']['items']
-    return(tracks_user)
+    return(create_dict(tracks_user))
 
 '''input is a string entry.'''
 def artist_entry(artist):
@@ -67,6 +69,7 @@ def artist_entry(artist):
 def Spotify_user_entry(user_name):
     #this is my friend danny who has several public playlists.
     input = user_name
+    global total_string
     total_string = 'spotify:user:'
     total_string += input
     lp = spotipy.Spotify(auth=token)
@@ -77,7 +80,6 @@ def Spotify_user_entry(user_name):
     for i in range(len(user_search)):
         list_to_keep.append(user_search['items'][i]['uri'])
         list_of_names.append(user_search['items'][i]['name'])
-    
         
     #list_to_keep will enable us to query to the function get_playlist_tracks
     #list_of_names will be the names of the playlist they choose to add.
@@ -90,14 +92,13 @@ def Spotify_user_entry(user_name):
     #user_public_tracks = get_playlist_tracks('dfox005',output)
     #create_dict(user_public_tracks)
     #return()
-
+    global new_dict
     new_dict = {}
-    for items in list_of_names:
-        for elements in list_to_keep:
-            new_dict[items] = elements
+    for i in range(len(list_of_names)):
+        new_dict[list_of_names[i]] = list_to_keep[i]
     global tester
     tester = new_dict.keys()
-    pprint(new_dict)
+    print(new_dict)
     #user_public_tracks = get_playlist_tracks('dfox005',output)
     #create_dict(user_public_tracks)
     return(tester)
@@ -208,16 +209,46 @@ def print_csv(song_information):
         tempo = song_information['tempo'][i]
         valence = song_information['valence'][i]
 
+        check = Songs.query.filter_by(name = name, album = album, artist = artist).all()
+        print(check[0].id)
+        print(check)
+        if len(check) == 0:
+            add_song = Songs(name = name, album = album, artist = artist, release_date = release_date, length = length, acousticness = acousticness, danceability = danceability, energy = energy, instrumentalness = instrumentalness, key = key, liveness = liveness, loudness = loudness, mode = mode, popularity = popularity, speechiness = speechiness, tempo = tempo, valence = valence)
+            db.session.add(add_song)
+            db.session.commit()
+
+        if likeSongs:
+            likePPlay(name, album, artist)
+
+def likePPlay(name, album, artist):
+    check = Songs.query.filter_by(name = name, album = album, artist = artist).all()
+    checkLike = Playlist.query.filter_by(song_id = check[0].id, user_id = current_user.id).all()
+    if len(checkLike) == 0:
+        add_liked = Playlist(user_id = current_user.id, song_id = check[0].id, likeability = 1)
+        db.session.add(add_liked)
+        db.session.commit()
+
 
 @pplay.route('/', methods=['GET', 'POST'])
 def index():
     user_name = request.args.get('user_name')
-    #playlist_name = request.form.get('addPlaylist')
-    #print(playlist_name)
+    playlist_name = request.form.get('addPlaylist')
+    like_playlist = request.form.get('likePlaylist')
+    global likeSongs
+    likeSongs = False
+    print(playlist_name)
     if user_name is not None:
-        if len(user_name) > 0:
+        if len(user_name) > 0 and playlist_name is None:
             Spotify_user_entry(user_name)
         else:
             print('error')
+    if playlist_name is not None:
+        print(new_dict[playlist_name])
+        print(total_string)
+        get_playlist_tracks(total_string ,new_dict[playlist_name])
+    if like_playlist is not None:
+        likeSongs = True
+        get_playlist_tracks(total_string ,new_dict[like_playlist])
+
 
     return render_template('pplay.html',  tester = tester , user=current_user)
