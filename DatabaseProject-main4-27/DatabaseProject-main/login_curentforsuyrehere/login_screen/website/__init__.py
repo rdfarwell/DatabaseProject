@@ -18,17 +18,14 @@ def create_app():
     from .rec import rec
     from .add import add
     from .pplay import pplay
+    from .liked import liked
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(rec, url_prefix='/rec')
     app.register_blueprint(add, url_prefix='/add')
     app.register_blueprint(pplay, url_prefix='/pplay')
-
-
-
-
-
+    app.register_blueprint(liked, url_prefix='/liked')
 
 
     from .models import User, Playlist, Songs

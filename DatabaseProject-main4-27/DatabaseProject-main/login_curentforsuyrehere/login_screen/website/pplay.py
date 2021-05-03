@@ -210,7 +210,7 @@ def print_csv(song_information):
         valence = song_information['valence'][i]
 
         check = Songs.query.filter_by(name = name, album = album, artist = artist).all()
-        print(check[0].id)
+        
         print(check)
         if len(check) == 0:
             add_song = Songs(name = name, album = album, artist = artist, release_date = release_date, length = length, acousticness = acousticness, danceability = danceability, energy = energy, instrumentalness = instrumentalness, key = key, liveness = liveness, loudness = loudness, mode = mode, popularity = popularity, speechiness = speechiness, tempo = tempo, valence = valence)
