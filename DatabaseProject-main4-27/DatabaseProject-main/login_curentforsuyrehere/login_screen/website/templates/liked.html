@@ -1,55 +1,38 @@
 {% extends "base.html" %} {% block title %}Add{% endblock %} {% block content
     %}
-    <style>
-
-      p {
-        padding-right: 1500px;
-        }
-
-
-      p1 {
-        padding-right: 1500px;
-        padding-bottom: 25px;
-
-        }
-      
-
-      </style>
 
     <h1 align="center">Your Liked and Disliked Songs</h1>
-    <p1>
-    <p>
+
     {% for qs in liked %}
-    </p>
-        <em>Title:</em> <strong>{{qs.name}}</strong>
-        <em>Artist:</em> <strong>{{qs.artist}}</strong>
-        <em>Album:</em> <strong>{{qs.album}}</strong>
+   
+      <p><em>Title:</em> <strong>{{qs.name}}</strong></p>
+      <p><em>Artist:</em> <strong>{{qs.artist}}</strong></p>
+      <p><em>Album:</em> <strong>{{qs.album}}</strong></p>
 
     <form METHOD="POST">
-        <button name="dislike" type="submit" class="btn btn-outline-primary" value = "{{qs}}" >Dislike</button>
+        <button name="dislike" type="submit" class="btn btn-outline-primary" value = "{{qs.id}}" >Dislike</button>
       </form>
     <form METHOD="POST">
-        <button name="delete" type="submit" class="btn btn-outline-primary" value = "{{qs}}" >Delete</button>
+        <button name="delete" type="submit" class="btn btn-outline-primary" value = "{{qs.id}}" >Delete</button>
       </form>
 
     {% endfor %}
-    </p1>
-    <p1>
-    <p>
+
+
     {% for qs in disliked %}
-    </p>
-        <em>Title:</em> <strong>{{qs.name}}</strong>
-        <em>Artist:</em> <strong>{{qs.artist}}</strong>
-        <em>Album:</em> <strong>{{qs.album}}</strong>
+
+        <p><em>Title:</em> <strong>{{qs.name}}</strong></p>
+      <p><em>Artist:</em> <strong>{{qs.artist}}</strong></p>
+      <p><em>Album:</em> <strong>{{qs.album}}</strong></p>
 
 
     <form METHOD="POST">
-        <button name="like" type="submit" class="btn btn-outline-primary" value = "{{qs}}" >Like</button>
+        <button name="like" type="submit" class="btn btn-outline-primary" value = "{{qs.id}}" >Like</button>
         </form>
     <form METHOD="POST">
-        <button name="delete" type="submit" class="btn btn-outline-primary" value = "{{qs}}" >Delete</button>
+        <button name="delete" type="submit" class="btn btn-outline-primary" value = "{{qs.id}}" >Delete</button>
         </form>
 
     {% endfor %}
-    </p1>
+
 {% endblock %}

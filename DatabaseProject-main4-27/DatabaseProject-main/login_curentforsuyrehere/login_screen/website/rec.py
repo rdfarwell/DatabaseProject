@@ -58,7 +58,6 @@ def smartAlgo():
 
         if not first: # prevents a person with no analytices from being run
             test = 'Select  * From songs Where acousticness > 0.5 and energy < 0.8'
-            #queryText = queryText + 'Limit 10'
             recommend = db.session.execute(queryText)
             counter = 0
             for i in recommend:
@@ -71,10 +70,6 @@ def smartAlgo():
                 if counter >= 10:
                     db.session.commit()
                     return()
-                # test = Songs.query.filter_by(id = i[0])
-                # print(i[0])
-                # print(test)
-                # print(i)
             db.session.commit()
 
 
